@@ -1,0 +1,17 @@
+1) how npm works with all these eslint, babel, travis
+
+
+
+Refactor previous projects
+
+L01     use object destructuring for getting data from wizzar class, and then template string
+        use list destructuring for getting first four wizzards
+        use array functions (1 arg, 1 method, 1 return types), but keep in mind behaviour with this and arguments.
+
+L02     use modules instead of IIFEs keep in mind that we can spoil non-primitive values using .sort(), pop, shift, slice. to preven it use list.slice().sort() instead. 
+
+Collect modules using webpack, connect the project to eslint.
+
+
+L03     USE MVC STRUCTURE. model-view-controller pattern. 
+        Find data structures and put them off markup. Kepp model and view seperately.

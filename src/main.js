@@ -1,31 +1,58 @@
 'use strict';
 
-const TASK_AMOUNT = 3;
+import {generateFilters} from './model/filter.js';
+import {generateTasks, generateTask} from './model/tasks.js';
 
-import {createSiteMenuTemplate} from './components/site-menu.js';
-import {createFilterTemplate} from './components/filter.js';
-import {createSortTemplate} from './components/sort.js';
-import {createTaskTemplate} from './components/task.js';
-import {createTaskEditTemplate} from './components/task-edit.js';
-import {createLoadmoreTemplate} from './components/load-more-button.js';
-import {createBoardTemplate} from './components/board.js';
-import {createBoardTasksTemplate} from './components/board-tasks.js';
-
+import {createSiteMenuTemplate} from './view/site-menu.js';
+import {createFilterTemplate} from './view/filter.js';
+import {createSortTemplate} from './view/sort.js';
+import {createTaskTemplate} from './view/task.js';
+import {createTaskEditTemplate} from './view/task-edit.js';
+import {createLoadmoreTemplate} from './view/load-more-button.js';
+import {createBoardTemplate} from './view/board.js';
+import {createBoardTasksTemplate} from './view/board-tasks.js';
 
 const render = (container, template, place = `beforeend`) => {
   container.insertAdjacentHTML(place, template);
 };
 
-render(document.querySelector(`.main .control`), createSiteMenuTemplate());
-render(document.querySelector(`.main`), createFilterTemplate());
+const controlElement = document.querySelector(`.control`);
+render(controlElement, createSiteMenuTemplate());
 
-render(document.querySelector(`.main`), createBoardTemplate());
-render(document.querySelector(`.board`), createSortTemplate());
+const filters = generateFilters();
+const mainElement = document.querySelector(`.main`);
+render(mainElement, createFilterTemplate(filters));
+render(mainElement, createBoardTemplate());
 
-render(document.querySelector(`.board`), createBoardTasksTemplate());
-render(document.querySelector(`.board__tasks`), createTaskEditTemplate());
-for (let i = 0; i < TASK_AMOUNT; i++) {
-  render(document.querySelector(`.board__tasks`), createTaskTemplate());
-}
+const boardElement = document.querySelector(`.board`);
+render(boardElement, createSortTemplate());
+render(boardElement, createBoardTasksTemplate());
+render(boardElement, createLoadmoreTemplate());
 
-render(document.querySelector(`.board`), createLoadmoreTemplate());
+const boardTasksElement = document.querySelector(`.board__tasks`);
+
+const TASK_COUNT = 23;
+const TASK_COUNT_ON_START = 8;
+const TASK_COUNT_BY_BUTTON = 4;
+let tasksShown = 0;
+
+const task = generateTask();
+render(boardTasksElement, createTaskEditTemplate(task));
+
+const tasks = generateTasks(TASK_COUNT);
+tasks.slice(tasksShown, TASK_COUNT_ON_START).forEach( (task) => {
+  render(boardTasksElement, createTaskTemplate(task));
+  tasksShown++;
+});
+
+const loadMoreButton = document.querySelector(`.load-more`);
+loadMoreButton.addEventListener(`click`, () => {
+  tasks.slice(tasksShown, tasksShown + TASK_COUNT_BY_BUTTON).forEach( (task) => {
+    render(boardTasksElement, createTaskTemplate(task));
+    tasksShown++;
+  });
+  tasksShown === tasks.length && event.target.remove();
+},false);
+
+
+
