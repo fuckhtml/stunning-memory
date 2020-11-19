@@ -1,25 +1,37 @@
-import {MONTH_NAMES} from './../const.js';
-import {formatTime} from './../utils.js';
+import {createElement} from './../utils.js';
+import {formatDateTime, isDeadlineExpired, isTaskRepeating} from './../utils.js';
 
-export const createTaskTemplate = (task) => {
-
+const createTaskTemplate = (task) => {
   const {
-    description, 
-    color, 
     isArchived, 
     isFavorite,
-    deadline,
     repeatingDays,
+    color, 
+    description, 
+    deadline,
   } = task;
 
+  const archiveClass = isArchived 
+    ? `card__btn--disabled` 
+    : ``;
+
+  const favoriteClass = isFavorite 
+    ? `card__btn--disabled` 
+    : ``;
+
+  const repeatingDaysClass = isTaskRepeating(repeatingDays) 
+    ? `card--repeat`
+    : ``;
+
   const colorClass = `card--${color}`;
-  const isDeadline = !!deadline;
-  const repeatingDaysClass = repeatingDays && Object.values(repeatingDays).some(Boolean) ? `card--repeat` : ``; 
-  const deadlineExpiredClass = isDeadline && deadline < Date.now() ? `card--deadline` : ``;
-  const archiveClass = (isArchived ? `card__btn--disabled` : ``);
-  const favoriteClass = (isFavorite ? `card__btn--disabled` : ``);
-  const date = isDeadline ? `${deadline.getDate()} ${MONTH_NAMES[deadline.getMonth()]}` : ``;
-  const time = isDeadline ? `${formatTime(deadline)}` : ``;
+
+  const deadlineExpiredClass = !!deadline && isDeadlineExpired(new Date().getTime(), deadline)
+    ? `card--deadline`
+    : ``;
+
+  const datetimeText = !!deadline 
+    ? formatDateTime(deadline) 
+    : ``;
 
   return (`
     <article class="
@@ -57,15 +69,13 @@ export const createTaskTemplate = (task) => {
 
           <div class="card__settings">
             <div class="card__details">
-              ${ isDeadline ? 
-                `<div class="card__dates">
-                  <div class="card__date-deadline">
-                    <p class="card__input-deadline-wrap">
-                      <span class="card__date">${date} ${time}</span>
-                    </p>
-                  </div>
-                </div>`: ``
-              } 
+              <div class="card__dates">
+                <div class="card__date-deadline">
+                  <p class="card__input-deadline-wrap">
+                    <span class="card__date">${datetimeText}</span>
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -73,3 +83,26 @@ export const createTaskTemplate = (task) => {
     </article>`
   );
 };
+
+export default class Task {
+  constructor(task) {
+    this._task = task;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTaskTemplate(this._task);
+  }
+  
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate())
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

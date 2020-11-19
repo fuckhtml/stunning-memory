@@ -38,4 +38,20 @@ export const FILTERS = [
   `favorites`,
   `repeating`,
   `archive`,
-]
+];
+
+export const DEFAULT_REPEATING_DAYS = {
+  "mo": false,
+  "tu": false,
+  "we": false,
+  "th": false,
+  "fr": false,
+  "sa": false,
+  "su": false,
+};
+
+export const DESCRIPTIONS = [
+  `Провести вечернюю тренировку`,
+  `Выучить 10 английских слов`,
+  `Дочитать книгу`,
+];
